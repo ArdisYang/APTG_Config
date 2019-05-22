@@ -1,0 +1,108 @@
+﻿---
+spring:
+  profiles: default
+  application:
+    name: "OsmReplyService"
+  jmx:
+    enabled: false
+  kafka:
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+    consumer:
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+      group-id: Kafka01
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+info:
+  function: OSM回單服務
+  schedule: Service all the time.
+  severity: 高
+
+logging:
+  file: "../logs/${spring.application.name}.log"
+  level:
+    root: info
+    org.apache.http: info
+    com.apt: debug
+
+server:
+  port: 15006
+  
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: true
+  health:
+    enabled: true
+    sensitive: false
+    
+security:
+  basic:
+    enabled: false
+  user:
+    name: admin
+    password: admin066
+  
+cron:
+  reload-daemon-config-job:
+    time: "0 0 0/1 * * ?"
+    enable: false
+
+daemon:
+  mail:
+    from: microservice46@aptg.com.tw
+    to: alanni@aptg.com.tw
+    cc: alanni@aptg.com.tw;ahuang@aptg.com.tw
+    subject: "${spring.application.name} Notification(ms46)"
+  config:
+    name: ${spring.application.name}
+
+osm-channel-configuration:
+  channels:
+    -
+      id: 0
+      name: defaultapt-cluster-osm
+      orderPrefix: default
+      url: "http://10.2.20.182:7001/oms/XMLAPI"
+      user: "oms-automation"
+      password: "osmadmin123"
+      flowNameSpace: "FixedOSM"
+      flowVersion: "1.0.0"
+    -
+      id: 1
+      name: apt-cluster-osm
+      orderPrefix: 1
+      url: "http://10.1.10.180:7001/oms/XMLAPI"
+      user: "oms-automation"
+      password: "osmadmin123"
+      flowNameSpace: "APT-OSM"
+      flowVersion: "1.5.3"
+    -
+      id: 2
+      name: apt-standalone-osm
+      orderPrefix: 2
+      url: "http://10.2.20.181:7001/oms/XMLAPI"
+      user: "oms-automation"
+      password: "osmadmin123"
+      flowNameSpace: "APT-OSM"
+      flowVersion: "1.5.3"
+    -
+      id: 3
+      name: fixed-standalone-osm
+      orderPrefix: 3
+      url: "http://10.2.20.182:7001/oms/XMLAPI"
+      user: "oms-automation"
+      password: "osmadmin123"
+      flowNameSpace: "FixedOSM"
+      flowVersion: "1.0.0"

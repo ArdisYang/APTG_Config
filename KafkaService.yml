@@ -1,0 +1,236 @@
+﻿---
+spring:
+  profiles: default
+  application:
+    name: "KafkaService"
+  jmx:
+    enabled: false
+  kafka:
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+    consumer:
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+      group-id: FixedKafka01
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      
+info:
+  function: 轉換JmsQueue並轉送KafkaQueue
+  severity: 高
+  
+logging:
+  file: "../logs/${spring.application.name}.log"
+  level:
+    root: info
+    org.apache.http: info
+    org.springframework.web.client: debug
+    
+server:
+  port: 13007
+
+daemon:
+  config:
+    name: ${spring.application.name}
+  mail:
+    from: "microservice73@aptg.com.tw"
+    to: "alanni@aptg.com.tw"
+    cc: alanni@aptg.com.tw;ahuang@aptg.com.tw
+    subject: "Notification from KafkaService(ms73)"
+    
+weblogic:
+  t3url: "t3://10.2.20.182:8001"
+  account: weblogic
+  password: weblogic123
+  enabled: true
+  datasource:
+    transaction:
+      enabled: true
+    apt-oes:
+      enabled: true
+      jndi-name: jdbc/oes
+  jms:  
+    enabled: true
+    connectionfactory: "weblogic.jms.XAConnectionFactory"
+    concurrency: "3-5"
+    recovery-interval: 1000
+    module-queue-name: "sam_jms_server/sam_jms_module!KFKCommandQueue"
+
+security:
+  basic:
+    enabled: false
+
+resource:
+  enabled: false
+
+
+cron:
+  esb:
+    reload-resource-job:
+      time: "0 0/1 * * * ?"
+      enabled: true
+
+kafka-task-configuration:
+  tasks:
+    -
+      id: 1
+      name: MRTGTask
+      taskType: Automatic
+      targetQueue: MrtgRequest
+      provTypeXPath: "//DataService/Mrtg/MrtgProvServiceType/text()"
+      provActionXPath: "//DataService/Mrtg/MrtgProvServiceAction/text()"
+    -
+      id: 2
+      name: IPMISTask
+      taskType: Automatic
+      targetQueue: IpMisRequest
+      provTypeXPath: "//DataService/IpMis/IpMisProvServiceType/text()"
+      provActionXPath: "//DataService/IpMis/IpMisProvServiceAction/text()"
+    -
+      id: 3
+      name: BBRASCSTask
+      taskType: Semiautomatic
+      targetQueue: BbrasRequest
+      provTypeXPath: "//DataService/BbrasCs/BbrasCsProvServiceType/text()"
+      provActionXPath: "//DataService/BbrasCs/BbrasCsProvServiceAction/text()"
+    -
+      id: 4
+      name: BBRASTask
+      taskType: Semiautomatic
+      targetQueue: BbrasRequest
+      provTypeXPath: "//DataService/Bbras/BbrasProvServiceType/text()"
+      provActionXPath: "//DataService/Bbras/BbrasProvServiceAction/text()"
+    -
+      id: 5
+      name: CHTTransferTask
+      taskType: Semiautomatic
+      targetQueue: ChtRequest
+      provTypeXPath: "//DataService/ChtTransfer/ChtTranProvServiceType/text()"
+      provActionXPath: "//DataService/ChtTransfer/ChtTranProvServiceAction/text()"
+    -
+      id: 6
+      name: CHTReportTask
+      taskType: Semiautomatic
+      targetQueue: ChtRequest
+      provTypeXPath: "//DataService/ChtReport/ChtRptProvServiceType/text()"
+      provActionXPath: "//DataService/ChtReport/ChtRptProvServiceAction/text()"
+    -
+      id: 7
+      name: MailTask
+      targetQueue: MailRequest
+      provTypeXPath: "//MailService/MailProvServiceType/text()"
+      provActionXPath: "//MailService/MailProvServiceAction/text()"
+    -
+      id: 8
+      name: NOCDataTask
+      taskType: Semiautomatic
+      targetQueue: NocRequest
+      provTypeXPath: "//NocDataService/NocDataProvServiceType/text()"
+      provActionXPath: "//NocDataService/NocDataProvServiceAction/text()"
+    -
+      id: 9
+      name: NOCNPTask
+      taskType: Semiautomatic
+      targetQueue: NocRequest
+      provTypeXPath: "//NocDataService/NocNp/NocNpProvServiceType/text()"
+      provActionXPath: "//NocDataService/NocNp/NocNpProvServiceAction/text()"
+    -
+      id: 10
+      name: NOCUpLoadTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//NocDataService/NocUpLoad/NocUpLoadProvServiceType/text()"
+      provActionXPath: "//NocDataService/NocUpLoad/NocUpLoadProvServiceAction/text()"
+    -
+      id: 11
+      name: ROCDataTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//RocDataService/RocDataProvServiceType/text()"
+      provActionXPath: "//RocDataService/RocDataProvServiceAction/text()"
+    -
+      id: 12
+      name: TechnicalSupportSettingTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//DataService/TechnicalSupportSetting/TSSetProvServiceType/text()"
+      provActionXPath: "//DataService/TechnicalSupportSetting/TSSetProvServiceAction/text()"
+    -
+      id: 13
+      name: NOCDataSettingTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//NocDataService/NocDataProvServiceType/text()"
+      provActionXPath: "//NocDataService/NocDataProvServiceAction/text()"
+    -
+      id: 14
+      name: JointNumUpdateTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//DataService/JointNumUpdate/JNUpdateProvServiceType/text()"
+      provActionXPath: "//DataService/JointNumUpdate/JNUpdateProvServiceAction/text()"
+    -
+      id: 15
+      name: ROCWorkOrderPrintTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//RocService/RocProvServiceType/text()"
+      provActionXPath: "//RocService/RocProvServiceAction/text()"
+    -
+      id: 16
+      name: ROCReportTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//RocService/RocProvServiceType/text()"
+      provActionXPath: "//RocService/RocProvServiceAction/text()"
+    -
+      id: 17
+      name: ROCInstallTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//RocService/RocInstall/RocProvServiceType/text()"
+      provActionXPath: "//RocService/RocInstall/RocProvServiceAction/text()"
+    -
+      id: 18
+      name: NOCSwitchSettingTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//NocService/NocProvServiceType/text()"
+      provActionXPath: "//NocService/NocProvServiceAction/text()"
+    -
+      id: 19
+      name: ROCSwitchSettingTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//RocService/RocProvServiceType/text()"
+      provActionXPath: "//RocService/RocProvServiceAction/text()"
+    -
+      id: 20
+      name: ROCTransferSettingTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//RocService/RocProvServiceType/text()"
+      provActionXPath: "//RocService/RocProvServiceAction/text()"
+    -
+      id: 21
+      name: ROCRemoveTask
+      taskType: Manual
+      targetQueue: OimServiceRequest
+      provTypeXPath: "//RocService/RocProvServiceType/text()"
+      provActionXPath: "//RocService/RocProvServiceAction/text()"
+    -
+      id: 22
+      name: IpChangeMailTask
+      taskType: Automatic
+      targetQueue: MailRequest
+      provTypeXPath: "//MailService/MailProvServiceType/text()"
+      provActionXPath: "//MailService/MailProvServiceAction/text()"

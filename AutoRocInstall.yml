@@ -1,0 +1,61 @@
+---
+spring:
+  profiles: default
+  application:
+    name: "AutoRocInstall"
+  jmx:
+    enabled: false
+        
+info:
+  function: ROC自動約裝機制
+  schedule: 每小時執行一次.
+  severity: 高
+  
+logging:
+  file: "../logs/${spring.application.name}.log"
+
+server:
+  port: 19003
+
+cron:
+  reload-daemon-config-job:
+    time:  "0 0 0/1 * * ?"
+    enable: true
+    
+daemon:
+  config:
+    name: ${spring.application.name}
+  thread:
+    timeout: 300000  # 允許的空閒時間
+    core-pool: 2     # 同步執行最小數量
+    max-pool: 2      # 同步執行最大數量
+    capacity: 0      # 緩衝數量
+    enabled: false
+    wait-for-queue: 200
+    wait-for-done: 1000
+  mail:
+    from: "osm-eai@aptg.com.tw"
+    to: "QM@aptg.com.tw"
+    cc: ""
+    subject: "Notification from AutoRocInstall(osm182)"
+
+security:
+  basic:
+    enabled: false
+    
+rocinstall-configuration:
+  rocinstallretry: 3
+  
+weblogic:
+  t3url: "t3://10.2.20.182:6001"
+  account: weblogic
+  password: weblogic123  
+  enabled: true
+  datasource:
+    enabled: true
+    aptoes: jdbc/oes
+  jms:  
+    enabled: true
+    connectionfactory: "weblogic.jms.XAConnectionFactory"
+    concurrency: "3-5"
+    recovery-interval: 1000

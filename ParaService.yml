@@ -1,0 +1,75 @@
+---
+spring:
+  profiles: default
+  application:
+    name: "ParaService"
+  jmx:
+    enabled: false
+  aop:
+    proxy-target-class: true     
+        
+info:
+  function: 提供Para 存取之Service
+  schedule: Service all the time
+  severity: 高
+  
+logging:
+  file: "../logs/${spring.application.name}.log"
+  level:
+    root: debug
+    org.apache.http: info
+    org.springframework.web.client: info
+    com.apt: debug
+    
+server:
+  port: 19002
+        
+daemon:
+  config:
+    name: ${spring.application.name}
+  mail:
+    from: "osm-eai@aptg.com.tw"
+    to: "QM@aptg.com.tw;tonilee@aptg.com.tw"
+    cc: tinghsuanfeng@aptg.com.tw
+    subject: "ParaService Notification from ParaService(QM182)"
+    
+weblogic:
+  t3url: "t3://10.2.20.182:6001"
+  account: weblogic
+  password: weblogic123  
+  enabled: true
+  datasource:
+    transaction:
+      enabled: true
+    apt-oes:
+      enabled: true
+      jndi-name: jdbc/oes
+    apt-osm:
+      enabled: true
+      jndi-name: jdbc/osm
+  jms:  
+    enabled: false
+  
+security:
+  basic:
+    enabled: false
+
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: true
+    
+resource:
+  enabled: true
+  path: "/opt/microservice/xslt/ParaService"
+  key:
+    type: "FiileName"
+  file:
+    extension: ".xsl"
+    
+          
+cron:
+  resource:
+    reload-resource-job:
+      time: "0 0/1 * * * ?"
+      enabled: true

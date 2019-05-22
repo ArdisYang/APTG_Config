@@ -1,0 +1,16 @@
+#Auto Launch Flag(1=Launch),Port,ApplicationName,Other configuration of JVM
+1,19002,EsbService,-Xms512m -Xmx512m
+1,19005,SevenEleven,
+1,19001,ParaService,
+1,19003,AutoRocInstall,
+1,19006,WorkService,
+1,19007,BbrasService,-Xms256m -Xmx256m
+1,19008,MrtgService,-Xms256m -Xmx256m
+1,19009,NocService,-Xms256m -Xmx256m
+1,19010,MailService,-Xms256m -Xmx256m
+1,19011,ChtService,-Xms512m -Xms512m
+1,19012,KafkaService,-Xms512m -Xms512m
+1,19013,IpMisService,-Xms256m -Xms256m
+1,15005,OsmReplyService,-Xms256m -Xmx256m
+1,15007,OimService,-Xms128m -Xmx256m
+1,15008,OimWeb,-Xms1024m -Xmx1024m

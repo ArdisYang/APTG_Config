@@ -1,0 +1,103 @@
+spring:
+  profiles: default
+  application:
+    name: "OimWeb"
+  jmx:
+    enabled: false
+  mvc:
+    view:
+      # 頁面默認前綴目錄
+      prefix: /WEB-INF/jsp/
+      # 響應頁面默認後綴
+      suffix: ".jsp"
+      static-path-pattern: "/static/**"
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password:
+    timeout: 10000
+    pool:
+      lettuce:
+        max-active: 10
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+  session:
+    store-type: none
+  datasource:
+    test1:
+      jdbc-url: jdbc:oracle:thin:@10.1.10.238:1521/APBWINT
+      username: OMS
+      password: OMS
+      driver-class-name: oracle.jdbc.OracleDriver
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
+  http:
+    multipart:
+      enabled: true #默認支持文檔上傳.
+      file-size-threshold: 0 #支持文檔寫入磁盤.
+      location: /opt/microservice/data/OIM  # 上傳文檔目錄
+      max-file-size: 1Mb # 最大支持文檔大小
+      max-request-size: 10Mb # 最大支持請求大小
+  kafka:
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+    consumer:
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+      group-id: Kafka01
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      
+logging:
+  file: "../logs/${spring.application.name}.log"
+  level:
+    root: info
+    org.apache.http: info
+    org.springframework.web.client: info
+    com.apt: debug
+    org.springframework: info
+    org.springframework.security: debug
+    org.springframework.data.redis: debug
+
+server:
+  port: 15008
+
+security:
+  oauth2:
+    resource:
+      filter-order: 3
+  basic:
+    enabled: false
+
+cron:
+  reload-sql-config-job:
+    time:  "0 0/5 * * * ?"
+    enabled: true
+
+workservice:
+  url: http://10.2.20.182:19006/workservice/api/exhistory
+  
+oimweb:
+  restapi:
+    connection:
+      timeout: 60000
+    read:
+      timeout: 60000
+  ui:
+     pendingcount-refreshtime: 60000
+  business:     
+    fixed:
+      address-change-reqid: ",REQ_00101B,REQ_00101C,REQ_00101D,REQ_001025,REQ_001026,REQ_001027,REQ_001028,REQ_001046,"
+  crm:
+    url: "http://10.2.20.90/cmsweb/API/ModifyOSMPara.jsp"
+

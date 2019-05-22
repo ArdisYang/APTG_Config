@@ -1,0 +1,65 @@
+---
+spring:
+  profiles: default
+  application:
+    name: "SevenEleven"
+  jmx:
+    enabled: false
+        
+info:
+  function: 將傳入的XML儲存到EsbRequestQueue
+  severity: 高
+  
+logging:
+  file: "../logs/${spring.application.name}.log"
+  level:
+    root: info
+    org.apache.http: info
+    org.springframework.web.client: info
+    com.apt: debug
+    
+server:
+  port: 8080
+
+daemon:
+  config:
+    name: ${spring.application.name}
+  mail:
+    from: osm-eai@aptg.com.tw
+    to: QM@aptg.com.tw;tonilee@aptg.com.tw
+    cc: tinghsuanfeng@aptg.com.tw
+    subject: "EAI Notification from SevenEleven(QM182)"
+    
+weblogic:
+  t3url: "t3://10.2.20.182:6001"
+  account: weblogic
+  password: weblogic123  
+  enabled: true
+  datasource:
+    enabled: true
+    aptoes: jdbc/oes
+  jms:  
+    enabled: true
+    connectionfactory: "weblogic.jms.XAConnectionFactory"
+    concurrency: "3-5"
+    recovery-interval: 1000
+
+security:
+  basic:
+    enabled: false
+    
+resource:
+  path: "/opt/microservice/xslt/EsbService"
+  file:
+    extension: ".xsl"
+
+application:
+  esb:
+    data-queue-path: "/opt/microservice/data/SevenEleven/crm"
+    data-receive-path: "receive"
+    data-bad-path: "bad"
+  seven-eleven:
+    transfer-charset:
+      enabled: true
+      charset: "UTF-8"      
+ 

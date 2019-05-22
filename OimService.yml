@@ -1,0 +1,90 @@
+﻿---
+spring:
+  profiles: default
+  application:
+    name: "OimService"
+  jmx:
+    enabled: false
+  transaction:
+    default-timeout: 300
+  jta:
+    default-jta-timeout: 180000
+    max-timeout: 300000
+    weblogic:
+      transaction-timeout: 300
+  datasource:
+    connection-timeout: 180000
+  kafka:
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+    consumer:
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+      group-id: Kafka01
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+info:
+  function: Oim資料處理
+  schedule: 由kafka OimServiceRequest觸發
+  severity: 高
+
+logging:
+  file: "../logs/${spring.application.name}.log"
+
+server:
+  port: 15007
+  
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: true
+  health:
+    enabled: true
+    sensitive: false
+
+weblogic:
+  t3url: "t3://10.2.20.182:8001" 
+  account: weblogic
+  password: weblogic123
+  enabled: true
+  datasource:
+    transaction:
+      enabled: true
+      timeout: 300
+    apt-oes:
+      enabled: true
+      jndi-name: jdbc/oes
+  jms:  
+    enabled: false
+    
+security:
+  basic:
+    enabled: false
+  user:
+    name: admin
+    password: admin066
+  
+cron:
+  reload-daemon-config-job:
+    time: "0 0 0/1 * * ?"
+    enable: false
+
+daemon:
+  mail:
+    from: microservice46@aptg.com.tw
+    to: "alanni@aptg.com.tw"
+    cc: "alanni@aptg.com.tw"
+    subject: "${spring.application.name} Notification"
+  config:
+    name: ${spring.application.name}
+

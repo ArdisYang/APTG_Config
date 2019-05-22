@@ -1,0 +1,98 @@
+---
+spring:
+  profiles: default
+  application:
+    name: "EsbService"
+  jmx:
+    enabled: false
+  kafka:
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+    consumer:
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+      group-id: FixedKafka01
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        
+info:
+  function: 轉換EsbRequestQue的XML並傳送OSM
+  severity: 高
+  
+logging:
+  file: "../logs/${spring.application.name}.log"
+  level:
+    root: info
+    org.apache.http: info
+    org.springframework.web.client: debug
+    org.springframework.kafka: debug
+    com.apt: debug
+        
+server:
+  port: 19001
+
+daemon:
+  config:
+    name: ${spring.application.name}
+  mail:
+    from: "osm73@aptg.com.tw"
+    to: "alanni@aptg.com.tw"
+    cc: "alanni@aptg.com.tw;ahuang@aptg.com.tw"
+    subject: "EAI Notification from EsbService(osm73)"
+    
+weblogic:
+  t3url: "t3://10.2.20.182:6001"
+  account: weblogic
+  password: weblogic123  
+  enabled: true
+  datasource:
+    enabled: true
+    aptoes: jdbc/oes
+  jms:  
+    enabled: true
+    connectionfactory: "weblogic.jms.XAConnectionFactory"
+    concurrency: "3-5"
+    recovery-interval: 1000
+
+security:
+  basic:
+    enabled: false
+
+resource:
+  enabled: true
+  path: "/opt/microservice/xslt/EsbService"
+  key:
+    type: "OSMRequestMode"
+  file:
+    extension: ".xsl"
+
+application:
+  esb:
+    data-queue-path: "/opt/microservice/data/EsbService/crm"
+    data-receive-path: "receive"
+    data-bad-path: "bad"
+      
+
+osm:
+  url: "http://10.2.20.182:7001/osm/wsapi"
+  retry-response: timeout
+  action: "http://xmlns.oracle.com/communications/ordermanagement/CreateOrder"
+  username: admin
+  password: osmadmin123
+
+
+cron:
+  esb:
+    reload-resource-job:
+      time: "0 0/1 * * * ?"
+      enabled: true
+    

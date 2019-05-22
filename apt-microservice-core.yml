@@ -1,0 +1,126 @@
+﻿---
+spring:
+  profiles: core
+  application:
+    name: "@pom.artifactId@"
+  jmx:
+    enabled: false
+  mail:
+    host: 192.168.99.147
+    port: 25
+    properties:
+      mail:
+        smtp:
+          auth: false
+        starttls:
+          enable: true
+          required: true
+  boot:
+    admin:
+      url: "http://10.2.20.182:8080"
+      username: "${security.user.name}"       #These two are needed so that the client###
+      password: "${security.user.password}"   #can register at the protected server api
+      client:
+        metadata:
+          user.name: "${security.user.name}"          #These two are needed so that the server
+          user.password:  "${security.user.password}" #can access the proteceted client endpoints
+      notify:
+        mail:
+          enabled: true
+          from: alertNotify@ndaemon.aptg.com.tw
+          to: QM@aptg.com.tw
+          cc: tinghsuanfeng@aptg.com.tw
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      
+management:
+  context-path: "/actuator"
+  security:
+    enabled: true
+    roles: SUPERUSER
+  health:
+    enabled: false
+    diskspace:
+      threshold: 524288000   #500MB
+       
+server:
+  port: 19001
+
+    
+security:
+  basic:
+    enabled: true
+  user:
+    name: admin
+    password: admin066
+    
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: true
+    
+weblogic:
+  t3url: "t3://10.2.20.182:6001"
+  account: weblogic
+  password: weblogic123  
+  enabled: true
+  datasource:
+    transaction:
+      enabled: true
+    apt-oes:
+      enabled: true
+      jndi-name: jdbc/oes
+  jms:  
+    enabled: false
+    connection-factory: "weblogic.jms.XAConnectionFactory"
+    concurrency: "3-5"
+    recovery-interval: 1000
+    
+daemon:
+  mail:
+    from: osm-ms@aptg.com.tw
+    to: alanni@aptg.com.tw
+    cc: alanni@aptg.com.tw;ahuang@aptg.com.tw
+    subject: "OSM micro service notification(QM182)"
+  config:
+    name: NDaemonCore
+  restapi:
+    connection: 
+      timeout: 60000    #1000 = 1 sec.
+    read:
+      timeout: 60000
+  eim:
+    enabled: false
+    url: "http://10.1.252.20:15001/eimgw"
+  thread:
+    timeout: 300000    # 允許的空閒時間
+    core-pool: 2   # 同步執行最小數量
+    max-pool: 2    # 同步執行最大數量
+    capacity: 10    # 緩衝數量
+    enabled: false
+    wait-for-queue: 200    # 等待Thread reset時間(ms)
+    wait-for-done: 1000    # 緩衝數量等待Thread 完成時間(ms)
+  base-path: "/opt/microservice"  
+        
+cron:
+  reload-daemon-config-job:
+    time:  "0 0 0/1 * * ?"
+    enabled: true
+    
+sql-handler:
+  user-created-characters-list: CONTACT_NAME,AGENT_NAME,COMPANY_OWNER_ID,CUSTOMER_C_NAME,CUSTOMER_E_NAME,COMPANY_OWNER_NAME,CUSTOMER_ADDRESS,CUSTOMER_TOWN,POST,BILL_TOWN,BILL_ADDRESS,PAYMAN_NAME,PAY_CHECK_REMARK,CONTACT_NAME_A,OTHER_INSTALL_NO_A,OTHER_INSTALL_HAMLET_A,OTHER_INSTALL_TOWN_A,OTHER_INSTALL_LANE_A,CUSTOMER_NAME,OTHER_INSTALL_RDNAME_A,OTHER_INSTALL_VILLAGE_A,INSTALL_RDNAME_A,CONTACT_NAME_B,INSTALL_VILLAGE_A,MANAGER_NAME,C_NAME,AGENTTOSALES_ID,INSTALL_ENGINEER,CONTACT,CPE_REMARK,DIRECTORY_NAME,INSTALL_VILLAGE,CUST_NAME,INSTALL_CHAR_A,VERIFY_REMARK,MODIFY_TYPE,ITEM_NAME,REMARKS,CONTENTS
+  encoding: MS950
+
+resource:
+  enabled: false
+  path:
+  file:
+    extension: ".xsl"
+  
+microservice:
+  npbt:
+    url: http://10.2.20.185:17002/microservice/pbt
+    

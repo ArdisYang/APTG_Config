@@ -1,0 +1,218 @@
+---
+spring:
+  profiles: default
+  application:
+    name: "MailService"
+  jmx:
+    enabled: false
+  kafka:
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+    consumer:
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+      group-id: fixedKafka01
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              
+info:
+  function: 發Mail。
+  schedule: 由kafka streams觸發.
+  severity: 高
+  
+logging:
+  file: "../logs/${spring.application.name}.log"
+
+server:
+  port: 15001
+
+cron:
+  reload-daemon-config-job:
+    time:  "0 0 0/1 * * ?"
+    enabled: false
+
+weblogic:
+  t3url: "t3://10.2.20.182:8001"
+  account: weblogic
+  password: "weblogic123"  #
+  enabled: true
+  datasource:
+    apt-oes:
+      enabled: true
+      jndi-name: jdbc/oes
+  jms:  
+    enabled: false
+
+daemon:
+  mail:
+    from: sdaemon-mfed@aptg.com.tw
+    to: alanni@aptg.com.tw;
+    cc: alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw
+    subject: "SBDaemon Notification"
+  config:
+    name: ${spring.application.name}
+
+mail-channel-configuration:
+  channels:
+    -
+      id: 1
+      name: default
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw;dionysusjeng@aptg.com.tw"
+      mailCC: 
+      mailSubject: "工單失敗信件"
+      mailContent: "工單失敗(CANCEL)"
+      status: 
+      sendToUser:  
+    -
+      id: 2
+      name: GsMail
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw;dionysusjeng@aptg.com.tw"
+      mailCC: 
+      mailSubject: "CONTRACT_SERIAL_NUM合約已生效，GS請立即派工"
+      mailContent: "CONTRACT_SERIAL_NUM合約已生效，GS請立即派工"
+      status: 
+      sendToUser:  
+    -
+      id: 3
+      name: GsIpChangeMail
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw"
+      mailCC: 
+      mailSubject: "e線通GS IP 變更設定通知"
+      mailContent: "CONTRACT_SERIAL_NUM合約IP 異動完成，請執行[Controller異動IP設定與GS綁定IP重設]異動"
+      status: 
+      sendToUser: 
+    -
+      id: 4
+      name: IpChangeMail
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: 
+      mailCC: 
+      mailSubject: "[CONTRACT_SERIAL_NUM]IP數量變更通知"
+      mailContent: "<br>CONTRACT_SERIAL_NUM合約IP 數量變更通知</br><br>變更前IP：oldValue </br><br>變更後IP：newValue </br>"
+      status: 
+      sendToUser: 
+    -
+      id: 5
+      name: ELL
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw"
+      mailCC: 
+      mailSubject: "ELL工單取消"
+      mailContent: 
+      status: 
+      sendToUser: 
+    -
+      id: 6
+      name: FTTX
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw"
+      mailCC: 
+      mailSubject: "Fttx工單取消"
+      mailContent: 
+      status: 
+      sendToUser: 
+    -
+      id: 7
+      name: FTTXVPN
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw"
+      mailCC: 
+      mailSubject: "FttxVpn工單取消"
+      mailContent: 
+      status: 
+      sendToUser: 
+    -
+      id: 8
+      name: ALVNVPN
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw"
+      mailCC: 
+      mailSubject: "ALVN工單取消"
+      mailContent: 
+      status: 
+      sendToUser: 
+    -
+      id: 9
+      name: ALIN
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw"
+      mailCC: 
+      mailSubject: "ALIN工單取消"
+      mailContent: 
+      status: 
+      sendToUser: 
+    -
+      id: 10
+      name: GS
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw;dionysusjeng@aptg.com.tw"
+      mailCC: 
+      mailSubject: "GS工單取消"
+      mailContent: 
+      status: 
+      sendToUser:
+    -
+      id: 11
+      name: GsIms
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw;dionysusjeng@aptg.com.tw"
+      mailCC: 
+      mailSubject: "Gs Ims工單取消"
+      mailContent: 
+      status: 
+      sendToUser:
+    -
+      id: 12
+      name: GsImsIpCentrex
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw;dionysusjeng@aptg.com.tw"
+      mailCC: 
+      mailSubject: "Gs Ims IpCentrex工單取消"
+      mailContent: 
+      status: 
+      sendToUser:
+    -
+      id: 13
+      name: PRA
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw;dionysusjeng@aptg.com.tw"
+      mailCC: 
+      mailSubject: "PRA工單取消"
+      mailContent: 
+      status: 
+      sendToUser:
+    -
+      id: 14
+      name: EM
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw"
+      mailCC: 
+      mailSubject: "EM工單取消"
+      mailContent: 
+      status: 
+      sendToUser:
+    -
+      id: 15
+      name: CBC
+      mailFrom: "MailService@aptg.com.tw"
+      mailTo: "alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw"
+      mailCC: 
+      mailSubject: "CBC工單取消"
+      mailContent: 
+      status: 
+      sendToUser:
+      
+pservice:
+  url: http://10.2.20.182:19001/pservice/

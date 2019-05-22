@@ -1,0 +1,64 @@
+---
+spring:
+  profiles: default
+  application:
+    name: "IpMisService"
+  jmx:
+    enabled: false
+  kafka:
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+    consumer:
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+      group-id: fixedKafka01
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              
+info:
+  function: IPMIS發送URL。
+  schedule: 由kafka streams觸發.
+  severity: 高
+  
+logging:
+  file: "../logs/${spring.application.name}.log"
+
+server:
+  port: 15001
+
+cron:
+  reload-daemon-config-job:
+    time:  "0 0 0/1 * * ?"
+    enabled: false
+
+weblogic:
+  t3url: "t3://10.2.20.182:8001"  #10.1.252.219:7001
+  account: weblogic
+  password: weblogic123
+  enabled: true
+  jms:  
+    enabled: false
+  
+daemon:
+  mail:
+    from: sdaemon-mfed@aptg.com.tw
+    to: alanni@aptg.com.tw
+    cc: 
+    subject: "IpMisService Notification"
+  config:
+    name: ${spring.application.name}
+
+ipmisservice: 
+  ipmisurl: http://ipmis.aptg.com.tw/ipmis/ip_assign_ebt.cgi
+
+pservice:
+  url: http://10.2.20.182:19001/pservice/

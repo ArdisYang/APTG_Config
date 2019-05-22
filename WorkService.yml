@@ -1,0 +1,53 @@
+---
+spring:
+  profiles: default
+  application:
+    name: "WorkService"
+  jmx:
+    enabled: false
+  mvc:
+    view:
+      # 頁面默認前綴目錄
+      prefix: /WEB-INF/jsp/
+      # 響應頁面默認後綴
+      suffix: .jsp
+        
+info:
+  function: 提供WORK介接回傳CRM相關頁面
+  severity: 高
+  
+logging:
+  file: "../logs/${spring.application.name}.log"
+
+server:
+  port: 13001
+
+daemon:
+  config:
+    name: ${spring.application.name}
+
+weblogic:
+  t3url: "t3://10.2.20.182:6001"  
+  account: weblogic
+  password: weblogic123   
+  enabled: true
+  datasource:
+    transaction:
+      enabled: true
+    fixed-standalone-osm:
+      enabled: true
+      jndi-name: jdbc/osm
+    apt-oes:
+      enabled: true
+      jndi-name: jdbc/oes
+  jms:  
+    enabled: false
+
+security:
+  basic:
+    enabled: false
+  user:
+    name: admin
+    password: admin066
+    
+
