@@ -2,14 +2,14 @@
 spring:
   profiles: dev
   application:
-    name: "ChtService"
+    name: "ChtServiceDEV"
   jmx:
     enabled: false
   kafka:
     producer:
       retries: 0
-      batch-size: 16384
-      buffer-memory: 33554432
+      batch-size: 222222222
+      buffer-memory: 22222222222
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
@@ -25,7 +25,7 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
               
 info:
-  function: 處理中華(CHT)資料轉入及比對、中華竣工測通。
+  function: 處理中華(CHT)資料轉入及比對、中華竣工測通DEV。
   schedule: 由kafka streams觸發及排程.
   severity: 高
   
