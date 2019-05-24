@@ -1,0 +1,75 @@
+---
+spring:
+  profiles: default
+  application:
+    name: "BbrasService"
+  jmx:
+    enabled: false
+  kafka:
+    producer:
+      retries: 0
+      batch-size: 0000000000000000000
+      buffer-memory: 000000000000000000
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+    consumer:
+      #bootstrap-servers: 10.2.20.182:9093,10.2.20.193:9093
+      bootstrap-servers: 10.2.20.185:9093,10.2.20.182:9093,10.2.20.193:9093
+      group-id: fixedKafka01
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+              
+info:
+  function: 處理BBRAS、CS測通    pro。
+  schedule: 由kafka streams觸發.
+  severity: 高
+  
+logging:
+  file: "../logs/${spring.application.name}.log"
+
+server:
+  port: 15001
+
+cron:
+  reload-daemon-config-job:
+    time:  "0 0 0/1 * * ?"
+    enabled: false
+
+weblogic:
+  t3url: "t3://10.2.20.182:8001"  #
+  account: weblogic
+  password: weblogic123   #
+  enabled: true
+  datasource:
+    transaction:
+      enabled: true
+    prov: 
+      enabled: true
+      jndi-name: jdbc/bbras
+  jms:  
+    enabled: false
+
+daemon:
+  mail:
+    from: sdaemon-mfed@aptg.com.tw
+    to: alanni@aptg.com.tw
+    cc: alanni@aptg.com.tw;ahuang@aptg.com.tw;peiyaoyang@aptg.com.tw
+    subject: "BbrasService Notification"
+  config:
+    name: ${spring.application.name}
+
+bbrasservice:
+  cron:
+    time:  "0 0/2 * * * ?"  # 
+    enabled: true
+
+pservice:
+  url: http://10.2.20.182:19001/pservice/
+
+retry: 
+  time: 300000
